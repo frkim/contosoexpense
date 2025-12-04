@@ -27,6 +27,9 @@ jobs:
     - name: Build
       run: dotnet build ContosoExpense/ContosoExpense.slnx --no-restore --configuration Release
 
+    - name: Run Unit Tests
+      run: dotnet test ContosoExpense.Tests/ContosoExpense.Tests.csproj --no-build --configuration Release --verbosity normal
+
     - name: Install Playwright Browsers
       run: |
         if [ -d "ContosoExpense.PlaywrightTests" ]; then
@@ -34,5 +37,31 @@ jobs:
         fi
       shell: bash
 
-    - name: Test
-      run: dotnet test ContosoExpense/ContosoExpense.slnx --no-build --configuration Release --verbosity normal
+    - name: Start Application
+      run: |
+        cd ContosoExpense
+        dotnet run --configuration Release --no-build &
+        echo $! > app.pid
+        # Wait for the application to be ready
+        for i in {1..30}; do
+          if curl -s http://localhost:5000 > /dev/null 2>&1; then
+            echo "Application is ready"
+            break
+          fi
+          echo "Waiting for application to start... ($i)"
+          sleep 2
+        done
+      env:
+        ASPNETCORE_URLS: http://localhost:5000
+
+    - name: Run Playwright Tests
+      run: dotnet test ContosoExpense.PlaywrightTests/ContosoExpense.PlaywrightTests.csproj --no-build --configuration Release --verbosity normal
+      env:
+        APP_URL: http://localhost:5000
+
+    - name: Stop Application
+      if: always()
+      run: |
+        if [ -f ContosoExpense/app.pid ]; then
+          kill $(cat ContosoExpense/app.pid) 2>/dev/null || true
+        fi
