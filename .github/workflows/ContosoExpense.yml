@@ -25,26 +25,8 @@ jobs:
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build
       run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
-    - name: Install Playwright Browsers
-      run: pwsh ContosoExpense.PlaywrightTests/bin/${{ env.CONFIGURATION }}/net10.0/playwright.ps1 install --with-deps
-    - name: Start Application
-      run: |
-        cd ${{ env.WORKING_DIRECTORY }}
-        dotnet run --configuration ${{ env.CONFIGURATION }} --no-build &
-        for i in {1..30}; do
-          if curl -s http://localhost:5000 > /dev/null 2>&1; then
-            echo "Application is ready"
-            break
-          fi
-          echo "Waiting for application to start... ($i)"
-          sleep 2
-        done
-      env:
-        ASPNETCORE_URLS: http://localhost:5000
     - name: Test
-      run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
-      env:
-        APP_URL: http://localhost:5000
+      run: dotnet test ContosoExpense.Tests --configuration ${{ env.CONFIGURATION }}
     - name: Publish
       run: dotnet publish "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
     - name: Publish Artifacts
