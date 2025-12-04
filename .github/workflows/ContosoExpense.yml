@@ -46,10 +46,7 @@ jobs:
     - name: Azure Login
       uses: azure/login@v2
       with:
-        client-id: ${{ vars.ContosoExpense_CLIENT_ID_D500 }}
-        tenant-id: ${{ vars.ContosoExpense_TENANT_ID_30DB }}
-        subscription-id: ${{ vars.ContosoExpense_SUBSCRIPTION_ID_30DB }}
-        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        creds: ${{ secrets.AZURE_CLIENT_SECRET }}
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
       with:
