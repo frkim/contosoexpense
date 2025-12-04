@@ -1,0 +1,61 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  playwright-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ContosoExpense/ContosoExpense.slnx
+
+    - name: Build
+      run: dotnet build ContosoExpense/ContosoExpense.slnx --no-restore --configuration Release
+
+    - name: Install Playwright browsers
+      run: pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+    - name: Start application
+      run: |
+        cd ContosoExpense
+        dotnet run --configuration Release --urls "http://localhost:5000" &
+        sleep 10
+
+    - name: Wait for application to be ready
+      run: |
+        for i in {1..30}; do
+          if curl -s http://localhost:5000 > /dev/null; then
+            echo "Application is ready"
+            exit 0
+          fi
+          echo "Waiting for application to start... ($i/30)"
+          sleep 2
+        done
+        echo "Application failed to start"
+        exit 1
+
+    - name: Run Playwright tests
+      env:
+        APP_URL: http://localhost:5000
+      run: dotnet test ContosoExpense.PlaywrightTests --no-build --configuration Release --verbosity normal
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright-report/
+        retention-days: 30
