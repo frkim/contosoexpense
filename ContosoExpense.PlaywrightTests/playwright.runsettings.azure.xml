@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Azure Playwright Testing Service configuration.
+  Use this file when running tests with Azure Playwright service for scalable browser testing.
+  
+  Usage: dotnet test --settings playwright.runsettings.azure.xml
+  
+  Required environment variables:
+    PLAYWRIGHT_SERVICE_ACCESS_TOKEN - Azure Playwright service authentication token
+    PLAYWRIGHT_SERVICE_URL - Azure Playwright service endpoint URL (optional, has default)
+  
+  The default service URL uses the West Europe region endpoint.
+-->
+<RunSettings>
+  <!-- General run configuration -->
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
+
+  <!-- Playwright configuration for Azure service -->
+  <Playwright>
+    <!-- Azure Playwright Testing service settings -->
+    <ServiceOptions>
+      <Os>linux</Os>
+      <RunId></RunId>
+      <ExposeNetwork>*</ExposeNetwork>
+      <UseCloudHostedBrowsers>true</UseCloudHostedBrowsers>
+    </ServiceOptions>
+
+    <!-- Launch options for cloud browsers -->
+    <LaunchOptions>
+      <Headless>true</Headless>
+      <Timeout>120000</Timeout>
+    </LaunchOptions>
+
+    <!-- Browser context options -->
+    <BrowserContextOptions>
+      <RecordVideoDir>videos</RecordVideoDir>
+    </BrowserContextOptions>
+
+    <!-- Expect options with longer timeout for cloud execution -->
+    <ExpectOptions>
+      <Timeout>30000</Timeout>
+    </ExpectOptions>
+  </Playwright>
+
+  <!-- NUnit adapter configuration with parallel workers for Azure -->
+  <NUnit>
+    <NumberOfTestWorkers>10</NumberOfTestWorkers>
+  </NUnit>
+
+  <!-- Test run parameters -->
+  <TestRunParameters>
+    <Parameter name="APP_URL" value="http://localhost:5000" />
+  </TestRunParameters>
+</RunSettings>

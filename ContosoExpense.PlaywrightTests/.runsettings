@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!-- General run configuration -->
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
+
+  <!-- Playwright configuration -->
+  <Playwright>
+    <!-- Launch options for all browsers -->
+    <LaunchOptions>
+      <Headless>true</Headless>
+      <Timeout>60000</Timeout>
+    </LaunchOptions>
+
+    <!-- Browser context options -->
+    <BrowserContextOptions>
+      <RecordVideoDir>videos</RecordVideoDir>
+    </BrowserContextOptions>
+
+    <!-- Expect options -->
+    <ExpectOptions>
+      <Timeout>10000</Timeout>
+    </ExpectOptions>
+  </Playwright>
+
+  <!-- NUnit adapter configuration -->
+  <NUnit>
+    <NumberOfTestWorkers>4</NumberOfTestWorkers>
+  </NUnit>
+
+  <!-- Test run parameters -->
+  <TestRunParameters>
+    <Parameter name="APP_URL" value="http://localhost:5000" />
+  </TestRunParameters>
+</RunSettings>
