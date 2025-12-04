@@ -28,7 +28,11 @@ jobs:
       run: dotnet build ContosoExpense/ContosoExpense.slnx --no-restore --configuration Release
 
     - name: Install Playwright Browsers
-      run: pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
+      run: |
+        if [ -d "ContosoExpense.PlaywrightTests" ]; then
+          pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
+        fi
+      shell: bash
 
     - name: Test
       run: dotnet test ContosoExpense/ContosoExpense.slnx --no-build --configuration Release --verbosity normal
