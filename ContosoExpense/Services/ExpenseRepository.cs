@@ -79,7 +79,7 @@ public class InMemoryExpenseRepository : IExpenseRepository
             new Expense
             {
                 Id = "exp-3",
-                Title = "JetBrains Rider License",
+                Title = "Developer tools License",
                 Description = "Annual IDE subscription",
                 Amount = 299.00m,
                 Currency = "USD",
@@ -205,7 +205,7 @@ public class InMemoryExpenseRepository : IExpenseRepository
             new Expense
             {
                 Id = "exp-11",
-                Title = "Annual AWS Training",
+                Title = "Annual Azure Training",
                 Description = "Cloud certification course",
                 Amount = 1200.00m,
                 Currency = "USD",
