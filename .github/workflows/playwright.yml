@@ -28,6 +28,22 @@ jobs:
     - name: Build
       run: dotnet build ContosoExpense/ContosoExpense.slnx --no-restore --configuration Release
 
+    - name: Check for Playwright Tests project
+      id: check_playwright
+      run: |
+        if [ -d "ContosoExpense.PlaywrightTests" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    - name: Install Playwright browsers
+      if: steps.check_playwright.outputs.exists == 'true'
+      run: pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+    - name: Start application
+      if: steps.check_playwright.outputs.exists == 'true'
     - name: Install Playwright browsers
       run: pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
 
@@ -38,6 +54,7 @@ jobs:
         sleep 10
 
     - name: Wait for application to be ready
+      if: steps.check_playwright.outputs.exists == 'true'
       run: |
         for i in {1..30}; do
           if curl -s http://localhost:5000 > /dev/null; then
@@ -51,12 +68,14 @@ jobs:
         exit 1
 
     - name: Run Playwright tests
+      if: steps.check_playwright.outputs.exists == 'true'
       env:
         APP_URL: http://localhost:5000
       run: dotnet test ContosoExpense.PlaywrightTests --no-build --configuration Release --verbosity normal
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
+      if: always() && steps.check_playwright.outputs.exists == 'true'
       if: always()
       with:
         name: playwright-report
