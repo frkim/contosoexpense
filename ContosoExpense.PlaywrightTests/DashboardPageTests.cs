@@ -39,7 +39,7 @@ public class DashboardPageTests : PageTest
         await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
         
         // Verify we're on the dashboard page
-        await Expect(Page.Locator("h2")).ToContainTextAsync("Dashboard");
+        await Expect(Page.Locator("h2").First).ToContainTextAsync("Dashboard");
     }
 
     [Test]
@@ -48,7 +48,7 @@ public class DashboardPageTests : PageTest
         await Page.GotoAsync($"{_baseUrl}/Dashboard/Index");
         
         // Dashboard should have some statistics or charts
-        await Expect(Page.Locator("h2")).ToContainTextAsync("Dashboard");
+        await Expect(Page.Locator("h2").First).ToContainTextAsync("Dashboard");
         
         // Check for common dashboard elements
         var cards = Page.Locator(".card");

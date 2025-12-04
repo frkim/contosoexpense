@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
   Azure Playwright Testing Service configuration.
   Use this file when running tests with Azure Playwright service for scalable browser testing.
   
-  Usage: dotnet test --settings playwright.runsettings.azure.xml
+  Usage: dotnet test settings=playwright.runsettings.azure.xml
   
   Required environment variables:
-    PLAYWRIGHT_SERVICE_ACCESS_TOKEN - Azure Playwright service authentication token
-    PLAYWRIGHT_SERVICE_URL - Azure Playwright service endpoint URL (optional, has default)
+    PLAYWRIGHT_SERVICE_ACCESS_TOKEN: Azure Playwright service authentication token
+    PLAYWRIGHT_SERVICE_URL: Azure Playwright service endpoint URL (optional, has default)
   
   The default service URL uses the West Europe region endpoint.
 -->
