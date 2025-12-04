@@ -1,0 +1,113 @@
+@page
+@model ContosoExpense.Pages.Admin.SettingsModel
+@{
+    ViewData["Title"] = "System Settings";
+}
+
+<h2><i class="bi bi-gear me-2"></i>System Settings</h2>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                General Settings
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Default Currency</label>
+                        <select class="form-select" name="defaultCurrency">
+                            @foreach (var currency in Model.Settings.AllowedCurrencies)
+                            {
+                                <option value="@currency" selected="@(currency == Model.Settings.DefaultCurrency)">@currency</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Receipt Required Threshold</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" name="receiptThreshold" 
+                                   value="@Model.Settings.ReceiptRequiredThreshold" step="0.01" />
+                        </div>
+                        <div class="form-text">Expenses above this amount require a receipt.</div>
+                    </div>
+
+                    <hr />
+
+                    <h5>Performance Simulation (Demo)</h5>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="simulateLatency" name="simulateLatency" 
+                               checked="@Model.Settings.SimulateLatency" />
+                        <label class="form-check-label" for="simulateLatency">Simulate Latency</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Simulated Latency (ms)</label>
+                        <input type="number" class="form-control" name="latencyMs" 
+                               value="@Model.Settings.SimulatedLatencyMs" min="0" max="10000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Simulated Failure Rate (0-100%)</label>
+                        <input type="number" class="form-control" name="failureRate" 
+                               value="@(Model.Settings.SimulatedFailureRate * 100)" min="0" max="100" step="1" />
+                        <div class="form-text">Set > 0 to randomly fail POST/PUT/DELETE operations for resilience testing.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                Data Management
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Export Data</h6>
+                        <p class="text-muted small">Download all data as JSON for backup or sharing.</p>
+                        <form method="post" asp-page-handler="Export">
+                            <button type="submit" class="btn btn-outline-primary">
+                                <i class="bi bi-download me-1"></i>Export JSON
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Reset Data</h6>
+                        <p class="text-muted small">Reset all data to initial sample state.</p>
+                        <form method="post" asp-page-handler="Reset" onsubmit="return confirm('Are you sure? This will reset ALL data.')">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i>Reset All Data
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-1"></i>About Settings
+            </div>
+            <div class="card-body">
+                <p><strong>Performance Simulation</strong></p>
+                <p class="small text-muted">
+                    Enable latency simulation and failure rates to test how the UI handles slow responses or errors.
+                    Useful for demonstrating loading states and error handling.
+                </p>
+                <p><strong>Data Management</strong></p>
+                <p class="small text-muted mb-0">
+                    Export allows you to save current data. Reset restores the initial sample data for demos.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

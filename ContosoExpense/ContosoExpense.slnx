@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="../ContosoExpense.Tests/ContosoExpense.Tests.csproj" />
   <Project Path="ContosoExpense.csproj" />
 </Solution>

@@ -1,0 +1,194 @@
+@page
+@model ContosoExpense.Pages.Admin.CategoriesModel
+@{
+    ViewData["Title"] = "Category Management";
+}
+
+<h2><i class="bi bi-tags me-2"></i>Category Management</h2>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Categories</span>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                    <i class="bi bi-plus me-1"></i>Add Category
+                </button>
+            </div>
+            <div class="card-body">
+                <table class="table" aria-label="Categories list">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Max Amount</th>
+                            <th>Monthly Limit</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <tr class="@(category.IsActive ? "" : "table-secondary")">
+                                <td>
+                                    <i class="@category.Icon me-1"></i>@category.Name
+                                    <br><small class="text-muted">@category.Description</small>
+                                </td>
+                                <td>@category.MaxAmountPerExpense.ToString("C")</td>
+                                <td>@category.MonthlyLimit.ToString("C")</td>
+                                <td>
+                                    <span class="badge @(category.IsActive ? "bg-success" : "bg-secondary")">
+                                        @(category.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                                            data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+                                            data-category-id="@category.Id"
+                                            data-category-name="@category.Name"
+                                            data-category-description="@category.Description"
+                                            data-category-icon="@category.Icon"
+                                            data-category-max="@category.MaxAmountPerExpense"
+                                            data-category-monthly="@category.MonthlyLimit"
+                                            data-category-active="@category.IsActive.ToString().ToLower()">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    @if (category.IsActive)
+                                    {
+                                        <form method="post" asp-page-handler="Deactivate" asp-route-id="@category.Id" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-warning btn-sm" title="Deactivate">
+                                                <i class="bi bi-pause"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form method="post" asp-page-handler="Activate" asp-route-id="@category.Id" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-success btn-sm" title="Activate">
+                                                <i class="bi bi-play"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-1"></i>About Categories
+            </div>
+            <div class="card-body">
+                <p>Categories help organize expenses and set spending limits.</p>
+                <ul class="mb-0">
+                    <li><strong>Max Amount:</strong> Maximum per expense</li>
+                    <li><strong>Monthly Limit:</strong> Total per month per user</li>
+                    <li>Deactivated categories won't appear for new expenses</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Add">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon (Bootstrap Icon class)</label>
+                        <input type="text" class="form-control" name="icon" value="bi-tag" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Max Amount per Expense</label>
+                            <input type="number" class="form-control" name="maxAmount" step="0.01" value="1000" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Monthly Limit</label>
+                            <input type="number" class="form-control" name="monthlyLimit" step="0.01" value="5000" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Update">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="editCategoryId" />
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" id="editCategoryName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" id="editCategoryDescription" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon</label>
+                        <input type="text" class="form-control" name="icon" id="editCategoryIcon" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Max Amount per Expense</label>
+                            <input type="number" class="form-control" name="maxAmount" id="editCategoryMax" step="0.01" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Monthly Limit</label>
+                            <input type="number" class="form-control" name="monthlyLimit" id="editCategoryMonthly" step="0.01" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.getElementById('editCategoryModal')?.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        document.getElementById('editCategoryId').value = button.getAttribute('data-category-id');
+        document.getElementById('editCategoryName').value = button.getAttribute('data-category-name');
+        document.getElementById('editCategoryDescription').value = button.getAttribute('data-category-description');
+        document.getElementById('editCategoryIcon').value = button.getAttribute('data-category-icon');
+        document.getElementById('editCategoryMax').value = button.getAttribute('data-category-max');
+        document.getElementById('editCategoryMonthly').value = button.getAttribute('data-category-monthly');
+    });
+</script>
+}

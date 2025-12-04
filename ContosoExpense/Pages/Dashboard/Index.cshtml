@@ -1,0 +1,289 @@
+@page
+@model ContosoExpense.Pages.Dashboard.IndexModel
+@{
+    ViewData["Title"] = Model.Dashboard.Title;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-graph-up me-2"></i>@Model.Dashboard.Title</h2>
+    <div class="btn-group" role="group" aria-label="Time filter">
+        <a asp-page="Index" asp-route-filter="ThisMonth" asp-route-userId="@Model.SelectedUserId"
+           class="btn @(Model.Dashboard.CurrentFilter == DashboardFilter.ThisMonth ? "btn-primary" : "btn-outline-primary")">
+            This Month
+        </a>
+        <a asp-page="Index" asp-route-filter="LastThreeMonths" asp-route-userId="@Model.SelectedUserId"
+           class="btn @(Model.Dashboard.CurrentFilter == DashboardFilter.LastThreeMonths ? "btn-primary" : "btn-outline-primary")">
+            Last 3 Months
+        </a>
+        <a asp-page="Index" asp-route-filter="YearToDate" asp-route-userId="@Model.SelectedUserId"
+           class="btn @(Model.Dashboard.CurrentFilter == DashboardFilter.YearToDate ? "btn-primary" : "btn-outline-primary")">
+            YTD
+        </a>
+        <a asp-page="Index" asp-route-filter="AllTime" asp-route-userId="@Model.SelectedUserId"
+           class="btn @(Model.Dashboard.CurrentFilter == DashboardFilter.AllTime ? "btn-primary" : "btn-outline-primary")">
+            All Time
+        </a>
+    </div>
+</div>
+
+@if (Model.IsManager)
+{
+    <div class="mb-4">
+        <label class="form-label">View Dashboard For:</label>
+        <div class="d-flex gap-2 flex-wrap">
+            <a asp-page="Index" asp-route-filter="@Model.Dashboard.CurrentFilter" 
+               class="btn @(string.IsNullOrEmpty(Model.SelectedUserId) ? "btn-secondary" : "btn-outline-secondary") btn-sm">
+                All Users
+            </a>
+            @foreach (var user in Model.Dashboard.AvailableUsers)
+            {
+                <a asp-page="Index" asp-route-filter="@Model.Dashboard.CurrentFilter" asp-route-userId="@user.Id"
+                   class="btn @(Model.SelectedUserId == user.Id ? "btn-secondary" : "btn-outline-secondary") btn-sm">
+                    @user.DisplayName
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card kpi-card kpi-submitted h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Submitted This Month</h6>
+                        <h2 class="mb-0">@Model.Dashboard.TotalSubmittedThisMonth</h2>
+                    </div>
+                    <i class="bi bi-send text-primary fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card kpi-card kpi-approved h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Approved This Month</h6>
+                        <h2 class="mb-0">@Model.Dashboard.TotalApprovedThisMonth</h2>
+                    </div>
+                    <i class="bi bi-check-circle text-success fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card kpi-card kpi-rejected h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Rejected This Month</h6>
+                        <h2 class="mb-0">@Model.Dashboard.TotalRejectedThisMonth</h2>
+                    </div>
+                    <i class="bi bi-x-circle text-danger fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card kpi-card kpi-pending h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Pending Approval</h6>
+                        <h2 class="mb-0">@Model.Dashboard.TotalPendingApproval</h2>
+                    </div>
+                    <i class="bi bi-hourglass-split text-warning fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Total Amount This Month</h6>
+                        <h2 class="mb-0 text-primary">@Model.Dashboard.TotalAmountThisMonth.ToString("C")</h2>
+                    </div>
+                    <i class="bi bi-currency-dollar text-primary fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Avg. Approval Time</h6>
+                        <h2 class="mb-0">@Model.Dashboard.AverageApprovalTimeHours.ToString("F1") hrs</h2>
+                    </div>
+                    <i class="bi bi-clock text-info fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Monthly Expenses Chart -->
+    <div class="col-md-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-bar-chart me-1"></i>Monthly Expenses
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart" height="300" aria-label="Monthly expenses chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Distribution -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-pie-chart me-1"></i>Status Distribution
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart" height="300" aria-label="Status distribution chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Category Breakdown -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-tags me-1"></i>Expenses by Category
+            </div>
+            <div class="card-body">
+                <canvas id="categoryChart" height="300" aria-label="Category breakdown chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Table -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-table me-1"></i>Category Details
+            </div>
+            <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+                <table class="table table-sm" aria-label="Category expense details">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th class="text-end">Count</th>
+                            <th class="text-end">Amount</th>
+                            <th class="text-end">%</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cat in Model.Dashboard.CategoryData)
+                        {
+                            <tr>
+                                <td><i class="@cat.CategoryIcon me-1"></i>@cat.CategoryName</td>
+                                <td class="text-end">@cat.Count</td>
+                                <td class="text-end">@cat.TotalAmount.ToString("C")</td>
+                                <td class="text-end">@cat.Percentage%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Monthly Chart
+    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.MonthlyData.Select(m => m.MonthName))),
+            datasets: [{
+                label: 'Approved',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.MonthlyData.Select(m => m.ApprovedAmount))),
+                backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                borderColor: 'rgb(25, 135, 84)',
+                borderWidth: 1
+            }, {
+                label: 'Pending',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.MonthlyData.Select(m => m.PendingAmount))),
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: 'rgb(255, 193, 7)',
+                borderWidth: 1
+            }, {
+                label: 'Rejected',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.MonthlyData.Select(m => m.RejectedAmount))),
+                backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                borderColor: 'rgb(220, 53, 69)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { stacked: true },
+                y: { stacked: true, beginAtZero: true }
+            }
+        }
+    });
+
+    // Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.StatusDistribution.Select(s => s.StatusName))),
+            datasets: [{
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.StatusDistribution.Select(s => s.Count))),
+                backgroundColor: [
+                    '#6c757d', // Draft
+                    '#0d6efd', // Submitted
+                    '#198754', // Approved
+                    '#dc3545', // Rejected
+                    '#20c997'  // Paid
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Category Chart
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.CategoryData.Select(c => c.CategoryName))),
+            datasets: [{
+                label: 'Amount',
+                data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Dashboard.CategoryData.Select(c => c.TotalAmount))),
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderColor: 'rgb(13, 110, 253)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+}
