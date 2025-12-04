@@ -44,6 +44,10 @@ jobs:
 
     - name: Start application
       if: steps.check_playwright.outputs.exists == 'true'
+    - name: Install Playwright browsers
+      run: pwsh ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright.ps1 install --with-deps
+
+    - name: Start application
       run: |
         cd ContosoExpense
         dotnet run --configuration Release --urls "http://localhost:5000" &
@@ -72,6 +76,7 @@ jobs:
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always() && steps.check_playwright.outputs.exists == 'true'
+      if: always()
       with:
         name: playwright-report
         path: ContosoExpense.PlaywrightTests/bin/Release/net10.0/playwright-report/
