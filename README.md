@@ -18,20 +18,22 @@ The solution is organized as:
 
 ## Screenshots
 
+Here are some screenshots of the Contoso Expense application in action, showcasing the main features and user interface.
+
 ### Home Page
 The main landing page provides quick access to key features and displays expense statistics.
 
-![Home Page](screenshots/home-page.png)
+![Home page showing welcome message, three feature cards for Create Expenses, View Expenses, and Dashboard, along with quick stats displaying total expenses, pending approvals, and monthly amount](screenshots/home-page.png)
 
 ### Expenses List
 View and manage all expenses with filtering and sorting capabilities.
 
-![Expenses List](screenshots/expenses-list.png)
+![Expenses list page showing a table of expenses with columns for date, title, category, amount, status, and actions, along with filter options for search, status, category, and date range](screenshots/expenses-list.png)
 
 ### Dashboard
 Comprehensive analytics and insights into expense patterns and trends.
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard page displaying expense metrics including submitted, approved, rejected, and pending counts, total amount, average approval time, and category breakdown table](screenshots/dashboard.png)
 
 ## Key Features
 
