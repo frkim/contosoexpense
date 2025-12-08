@@ -18,7 +18,7 @@ The solution is organized as:
 
 ## Screenshots
 
-Here are some screenshots of the Contoso Expense application in action, showcasing the main features and user interface.
+Here are some screenshots of the Contoso Expense application in action, showcasing the main features and user interface. These screenshots show the application running with sample demo data.
 
 ### Home Page
 The main landing page provides quick access to key features and displays expense statistics.
