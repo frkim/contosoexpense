@@ -16,6 +16,23 @@ The solution is organized as:
 - **ContosoExpense** – main application project
 - **ContosoExpense.Tests** – automated test project for core services and repositories
 
+## Screenshots
+
+### Home Page
+The main landing page provides quick access to key features and displays expense statistics.
+
+![Home Page](screenshots/home-page.png)
+
+### Expenses List
+View and manage all expenses with filtering and sorting capabilities.
+
+![Expenses List](screenshots/expenses-list.png)
+
+### Dashboard
+Comprehensive analytics and insights into expense patterns and trends.
+
+![Dashboard](screenshots/dashboard.png)
+
 ## Key Features
 
 - **Expense Management**
